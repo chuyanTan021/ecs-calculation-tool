@@ -9,10 +9,10 @@
 # Step4: Regress the R on tas, plotting;
 # Step5: Save the result into a .npz file and save the regression plot.
 
-
 import numpy as np
 import netCDF4 as nc
 import matplotlib.pyplot as plt
+import sys
 
 import glob
 import pandas
@@ -82,7 +82,7 @@ def PL_ECS(x, y, modn, pth, k=0, b=0):
     
     fig5, ax5 = plt.subplots(1, 1, figsize=(12, 9))  #(16.2, 9.3))
     
-    parameters = {'axes.labelsize': 16, 'legend.fontsize': 16, 'axes.titlesize': 22, 'xtick.labelsize': 19, 'ytick.labelsize': 19}
+    parameters = {'axes.labelsize': 19, 'legend.fontsize': 16, 'axes.titlesize': 22, 'xtick.labelsize': 21, 'ytick.labelsize': 21}
     plt.rcParams.update(parameters)
     
     # plotting:
@@ -97,11 +97,13 @@ def PL_ECS(x, y, modn, pth, k=0, b=0):
     
     xfit = np.linspace(0., 12.5, 100)
     yfit = k2 * xfit + b2
-    print("Plotting : ")
+    print("/nPlotting : ")
     print("k, b from statsmodels are: ", k, b)
     print("k, b from sklearn are: ", k2, b2)
+    
     plt.plot(xfit, yfit, 'k', linewidth = 2.4, linestyle = '-', label = 'fitting line for whole 150 points ')
     
+    # plotting setting:s
     plt.xlim([0.00, 12.50])
     plt.ylim([0.00, 8.54])
     plt.ylabel('Change in TOA net downwelling radiative flux '+ r'$(W m^{-2})$')
@@ -256,13 +258,16 @@ def main():
     # get the model's short name from input:
     Model_name = str(sys.argv[1])
     
+    n_flag = 0
     for i in range(len(deck)):
         
         if Model_name == deck[i]['modn']:
             print(" model for calc: ", deck[i]['modn'])
             calc_ECS_metrics(**deck[i])  # pass the model's infomation to func for calculating ECS
-        
-    print(" I don't have this GCM currently, sorry.")
+            n_flag = n_flag +1
+    else:
+        if n_flag == 0:
+            print(" I don't have this GCM currently, sorry.")
 
     
     return None
