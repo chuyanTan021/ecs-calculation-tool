@@ -18,7 +18,8 @@ import glob
 import pandas
 import xarray
 from copy import deepcopy
-import statsmodels.formula.api import smf
+import statsmodels.formula.api as smf
+from sklearn import linear_model
 # below are self-defined functions
 
 from read_hs_file import *
@@ -74,19 +75,43 @@ def area_mean(data, lats, lons):
     return Time_series
 
 
-def PL_ECS(x, y, pth):
+def PL_ECS(x, y, modn, pth, k=0, b=0):
     # Plotting function.
-    # x, y are the time series of the X- and Y- axes, pth is path for saving the figure.
+    # x, y are the time series of the X- and Y- axes, modn is the model's name, pth is path for saving the figure.
+    # k and b is the coefficients of linear fit of 150 (abr4x) points, y_fit = k * x_fit + b;
+    
     fig5, ax5 = plt.subplots(1, 1, figsize=(12, 9))  #(16.2, 9.3))
     
-    parameters = {'axes.labelsize': 18, 'legend.fontsize': 16, 'axes.titlesize': 22, 'xtick.labelsize': 19, 'ytick.labelsize': 19}
+    parameters = {'axes.labelsize': 16, 'legend.fontsize': 16, 'axes.titlesize': 22, 'xtick.labelsize': 19, 'ytick.labelsize': 19}
     plt.rcParams.update(parameters)
     
     # plotting:
-    plt.plot(x, y, 'r+', linewidth = 2.5, label = "regressing over every year of 150yrs abrupt-4xCO2 simulation")
+    plt.plot(x, y, 'b+', linewidth = 2.5, label = "regressing over every year of 150yrs abrupt-4xCO2 simulation")
+    
+    # add a fitting line:
+    if all([k!=0, b!=0]):
+        regr_plot = linear_model.LinearRegression()  # use sklearn calculating the coef and intecept for comparison.
+        result_fit = regr_plot.fit(np.asarray(x).reshape(-1, 1), np.asarray(y))
+        k2 = float(result_fit.coef_)
+        b2 = float(result_fit.intercept_)
+    
+    xfit = np.linspace(0., 12.5, 100)
+    yfit = k2 * xfit + b2
+    print("Plotting : ")
+    print("k, b from statsmodels are: ", k, b)
+    print("k, b from sklearn are: ", k2, b2)
+    plt.plot(xfit, yfit, 'k', linewidth = 2.4, linestyle = '-', label = 'fitting line for whole 150 points ')
+    
+    plt.xlim([0.00, 12.50])
+    plt.ylim([0.00, 8.54])
     plt.ylabel('Change in TOA net downwelling radiative flux '+ r'$(W m^{-2})$')
     plt.xlabel('Change in surface air temperature '+ r'$(K)$')
+    
+    plt.title(" Radiation flux anomalies over GMT: "+ modn)
+    plt.savefig(pth+modn+"_ECS calculation.jpg", dpi = 100)
+    
     return None
+
 
 def calc_ECS_metrics(**model_data):
     # This function is for step 1, 2, 3, 4, .
@@ -142,8 +167,13 @@ def calc_ECS_metrics(**model_data):
     print(result)
     
     # Plotting
+    pth_plotting = '/glade/work/chuyan/Research/Cloud_CCFs_RMs/Course_objective_ana/plot_file/ECS_calculation/'
+    PL_ECS(tas, R, model_data['modn'], pth_plotting, k = reg_model._results.params[1], b = reg_model._results.params[0])  # k, b are optional arguments
     
-    return result
+    # Save the result (step 5):
+    pth_data = '/glade/work/chuyan/Research/Cloud_CCFs_RMs/Course_objective_ana/data_file/ECS_calculation/'
+    np.savez(pth_data+model_data['modn'], model = model_data, result = result)
+    return None
 
 
 def main():
