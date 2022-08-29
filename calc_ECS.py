@@ -23,8 +23,7 @@ from sklearn import linear_model
 # below are self-defined functions
 
 from read_hs_file import *
-# from get_ECSCMIP5data import *   # undefined..
-
+from get_ECSCMIP5data import * 
 from get_ECSCMIP6data import *
 from area_mean import *
 from useful_func_cy import *
@@ -82,7 +81,7 @@ def PL_ECS(x, y, modn, pth, k=0, b=0):
     
     fig5, ax5 = plt.subplots(1, 1, figsize=(12, 9))  #(16.2, 9.3))
     
-    parameters = {'axes.labelsize': 19, 'legend.fontsize': 16, 'axes.titlesize': 22, 'xtick.labelsize': 21, 'ytick.labelsize': 21}
+    parameters = {'axes.labelsize': 23, 'legend.fontsize': 18, 'axes.titlesize': 22, 'xtick.labelsize': 24, 'ytick.labelsize': 24}
     plt.rcParams.update(parameters)
     
     # plotting:
@@ -122,6 +121,10 @@ def calc_ECS_metrics(**model_data):
     if model_data['cmip'] == 'cmip6':
 
         inputVar_pi, inputVar_abr = get_ECSCMIP6(**model_data)
+        
+    elif model_data['cmip'] == 'cmip5':
+        
+        inputVar_pi, inputVar_abr = get_ECSCMIP5(**model_data)
     else:
         print('not cmip6 & cmip5 data.')
     
@@ -251,9 +254,42 @@ def main():
                 'exper': exp, 'ensmem': 'r1i1p1f1', 'gg': 'gn', "typevar": 'Amon'}
     TaiESM1 = {'modn': 'TaiESM1', 'consort': 'AS-RCEC', 'cmip': 'cmip6',
                     'exper': exp, 'ensmem': 'r1i1p1f1', 'gg': 'gn', "typevar": 'Amon'}
+    # CMIP5 model: # 14
+    ACCESS10 = {'modn': 'ACCESS1-0', 'consort': 'CSIRO-BOM', 'cmip': 'cmip5',   # 2-d (145) and 3-d (146) variables have different lat shape
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    ACCESS13 = {'modn': 'ACCESS1-3', 'consort': 'CSIRO-BOM', 'cmip': 'cmip5',   # 2-d (145) and 3-d (146) variables have different lat shape
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    BNUESM = {'modn': 'BNU-ESM', 'consort': 'BNU', 'cmip': 'cmip5',
+              'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
     
+    CCSM4 = {'modn': 'CCSM4', 'consort': 'NCAR', 'cmip': 'cmip5',
+                 'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    CNRMCM5 = {'modn': 'CNRM-CM5', 'consort': 'CNRM-CERFACS', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    CSIRO_Mk360 = {'modn': 'CSIRO-Mk3-6-0', 'consort': 'CSIRO-QCCCE', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    CanESM2 = {'modn': 'CanESM2', 'consort': 'CCCma', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    FGOALSg2 = {'modn': 'FGOALS-g2', 'consort': 'LASG-CESS', 'cmip': 'cmip5',   # missing 'prw' in piControl
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    FGOALSs2 = {'modn': 'FGOALS-s2', 'consort': 'LASG-IAP', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    GFDLCM3 = {'modn': 'GFDL-CM3', 'consort': 'NOAA-GFDL', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    GISSE2H = {'modn': 'GISS-E2-H', 'consort': 'NASA-GISS', 'cmip': 'cmip5',
+               'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    GISSE2R = {'modn': 'GISS-E2-R', 'consort': 'NASA-GISS', 'cmip': 'cmip5',
+               'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    IPSLCM5ALR = {'modn': 'IPSL-CM5A-LR', 'consort': 'IPSL', 'cmip': 'cmip5',
+                   'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    MIROC5 = {'modn': 'MIROC5', 'consort': 'MIROC', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    MPIESMMR = {'modn': 'MPI-ESM-MR', 'consort': 'MPI-M', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
+    NorESM1M = {'modn': 'NorESM1-M', 'consort': 'NCC', 'cmip': 'cmip5',
+                'exper': exp, 'ensmem': 'r1i1p1', "typevar": 'Amon'}
 
-    deck = [BCCESM1, CanESM5, CESM2, CESM2FV2, CESM2WACCM, CNRMESM21, GISSE21G, GISSE21H, IPSLCM6ALR, MRIESM20, MIROC6, SAM0, E3SM10, FGOALSg3, GFDLCM4, CAMSCSM1, INM_CM48, MPIESM12LR, AWICM11MR, BCCCSMCM2MR, CMCCCM2SR5, CESM2WACCMFV2, CNRMCM61, CNRMCM61HR, ECEarth3, ECEarth3Veg, GISSE22G, MIROCES2L, NESM3, NorESM2MM, TaiESM1, HADGEM3]  #..current # 18 + 14
+    deck = [BCCESM1, CanESM5, CESM2, CESM2FV2, CESM2WACCM, CNRMESM21, GISSE21G, GISSE21H, IPSLCM6ALR, MRIESM20, MIROC6, SAM0, E3SM10, FGOALSg3, GFDLCM4, CAMSCSM1, INM_CM48, MPIESM12LR, AWICM11MR, BCCCSMCM2MR, CMCCCM2SR5, CESM2WACCMFV2, CNRMCM61, CNRMCM61HR, ECEarth3, ECEarth3Veg, GISSE22G, MIROCES2L, NESM3, NorESM2MM, TaiESM1, HADGEM3, BNUESM, CCSM4, CNRMCM5, CSIRO_Mk360, CanESM2, FGOALSg2, FGOALSs2, GFDLCM3, GISSE2H, GISSE2R, IPSLCM5ALR, MIROC5, MPIESMMR, NorESM1M]  #..current # 32 + 14 = 46
 
     # get the model's short name from input:
     Model_name = str(sys.argv[1])
